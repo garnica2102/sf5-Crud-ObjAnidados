@@ -65,15 +65,26 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public ApiResponse update(String id, Usuario usuario) {
-		Optional<Usuario> userExisted = usuarioRepository.findById(id);
+		
+		Usuario userExisted = usuarioRepository.findById(id).orElseThrow(() -> 
+        new UsuarioNotFoundException(Message.USUARIO_NOT_FOUND, 404, HttpStatus.NOT_FOUND, LocalDateTime.now()));
+		
+		System.out.println(userExisted);
+
 		try {
-			Usuario usuarioBase = userExisted.get();
-			//Copia todas las pripiedas y recorre el objeto para setearlo con los nuevos valores
-			BeanUtils.copyProperties(usuario, usuarioBase);
-			usuarioRepository.save(usuario);
+			
+			if(userExisted == null) {
+				return new ApiResponse(Message.USUARIO_NOT_FOUND, 404, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			} else {
+				Optional<Usuario> user = usuarioRepository.findById(id);
+				System.out.println("Id usuario --> " + user);
+				Usuario usuarioBase = user.get();
+				//Copia todas las pripiedas y recorre el objeto para setearlo con los nuevos valores
+				BeanUtils.copyProperties(usuario, usuarioBase);
+				usuario =  usuarioRepository.save(usuario);	
+			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			 new UsuarioNotFoundException(Message.USUARIO_NOT_FOUND, 404, HttpStatus.NOT_FOUND, LocalDateTime.now());			 
 		}
 		return new ApiResponse(Message.USUARIO_UPDATE_SUCCESSFULLY, 201, HttpStatus.OK, LocalDateTime.now());
 	}
