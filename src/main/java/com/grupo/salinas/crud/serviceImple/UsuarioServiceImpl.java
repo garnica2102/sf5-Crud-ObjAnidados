@@ -71,7 +71,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 			//Copia todas las pripiedas y recorre el objeto para setearlo con los nuevos valores
 			BeanUtils.copyProperties(usuario, usuarioBase);
 			usuarioRepository.save(usuario);
-//			return new ApiResponse(Message.USUARIO_UPDATE_SUCCESSFULLY, 201, HttpStatus.OK, LocalDateTime.now());
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
